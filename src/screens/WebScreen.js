@@ -1,0 +1,81 @@
+import React, {Component} from 'react';
+import {Text, StyleSheet, View, StatusBar} from 'react-native';
+import {WebView} from 'react-native-webview';
+// import WebView from 'react-native-autoheight-webview';
+import {connect} from 'react-redux';
+import {BLACK, WHITE} from '../constants/Colors';
+import {FONT_SIZE_SMALL} from '../constants/Dimens';
+import {getStatusBarHeight} from 'react-native-status-bar-height';
+import {getScreenHeight} from '../helpers/DimensionsHelper';
+import {bindActionCreators} from 'redux';
+
+const SCREEN_HEIGHT = getScreenHeight();
+const STATUS_BAR_HEIGHT = getStatusBarHeight();
+
+class WebScreen extends Component {
+  render() {
+    const {isWebViewVisible, currentSlideData} = this.props;
+    if (!isWebViewVisible || !currentSlideData) {
+      return <View style={styles.container}></View>;
+    }
+
+    const {source, url} = currentSlideData;
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.top}>
+          <Text style={styles.title}>{source.name}</Text>
+        </View>
+
+        <View style={styles.webViewContainer}>
+          <WebView
+            source={{
+              uri: url,
+            }}
+            // style={styles.webView}
+            // scrollEnabled
+            // scalesPageToFit
+            // javaScriptEnabled={true}
+            // zoomable={false}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  top: {
+    height: STATUS_BAR_HEIGHT,
+    backgroundColor: BLACK,
+    color: WHITE,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  title: {
+    color: WHITE,
+    fontSize: FONT_SIZE_SMALL,
+  },
+  webViewContainer: {
+    minHeight: SCREEN_HEIGHT + 30,
+  },
+});
+
+export default connect(
+  state => ({
+    currentSlideIndex: state.news.currentSlideIndex,
+    isWebViewVisible: state.news.isWebViewVisible,
+    currentSlideData: state.news.newsList[state.news.currentSlideIndex]
+      ? state.news.newsList[state.news.currentSlideIndex]
+      : null,
+  }),
+  dispatch => ({
+    actions: bindActionCreators({}, dispatch),
+  }),
+)(WebScreen);
