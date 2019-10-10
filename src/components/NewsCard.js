@@ -10,15 +10,23 @@ import {
 import {GRAY, WHITE, DARK_GRAY} from '../constants/Colors';
 
 export default class NewsCard extends Component {
+  getStringTrimmed = str => {
+    if (!str) {
+      return str;
+    }
+    if (str.includes('…')) {
+      str = str.split('…')[0];
+    }
+    str = str.replace('\n', ' ');
+    return str.trim();
+  };
+
   render() {
     const {source, title, description, urlToImage, content} = this.props;
     const footer = {
-      title: 'The tournament was being held in Sri Lanka',
-      subtitle: "Read more about India's appearance in the finals",
+      title,
+      subtitle: 'Read more from ' + source.name,
     };
-
-    const link =
-      'https://twitter.com/ACCMedia1/status/1172820283499003904?utm_campaign=fullarticle&utm_medium=referral&utm_source=inshorts';
 
     return (
       <View style={styles.container}>
@@ -28,18 +36,32 @@ export default class NewsCard extends Component {
             source={{
               uri: urlToImage,
             }}
-            resizeMode={FastImage.resizeMode.stretch}
+            resizeMode={FastImage.resizeMode.cover}
           />
         </View>
 
         <View style={[styles.middle, styles.contentPadding]}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
+          <Text style={styles.description}>
+            {this.getStringTrimmed(description) + '. ' + content
+              ? this.getStringTrimmed(content) + '...'
+              : ''}
+          </Text>
         </View>
 
         <View style={[styles.footer, styles.contentPadding]}>
-          <Text style={styles.footerTitle}>{footer.title}</Text>
-          <Text style={styles.footerSubtitle}>{footer.subtitle}</Text>
+          <Text
+            style={styles.footerTitle}
+            numberOfLines={1}
+            ellipsizeMode="tail">
+            {footer.title}
+          </Text>
+          <Text
+            style={styles.footerSubtitle}
+            numberOfLines={1}
+            ellipsizeMode="tail">
+            {footer.subtitle}
+          </Text>
         </View>
       </View>
     );

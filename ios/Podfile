@@ -27,9 +27,13 @@ target 'InshortsClone' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'RNFastImage', :path => '../node_modules/react-native-fast-image'
 
-  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
+
+
+
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   target 'InshortsCloneTests' do
     inherit! :search_paths

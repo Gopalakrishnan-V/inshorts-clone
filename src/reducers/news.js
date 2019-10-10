@@ -8,8 +8,10 @@ const FETCH_NEWS_FAILED = 'FETCH_NEWS_FAILED';
 
 const SET_CURRENT_SLIDE_INDEX = 'SET_CURRENT_SLIDE_INDEX';
 const SET_WEBVIEW_VISIBILITY = 'SET_WEBVIEW_VISIBILITY';
+const SET_QUERY = 'SET_QUERY';
 
 const initialState = {
+  query: 'india',
   isLoading: false,
   currentPage: 1,
   newsList: [],
@@ -31,7 +33,7 @@ const reducer = (state = initialState, action) => {
       const {newsList} = state;
       const updatedNewsList =
         page === 1 ? [...result] : [...newsList, ...result];
-      return {...state, isLoading: false, newsList: updatedNewsList, page};
+      return {...state, isLoading: false, newsList: updatedNewsList, currentPage: page};
     }
     case SET_CURRENT_SLIDE_INDEX: {
       const {index} = action;
@@ -41,6 +43,10 @@ const reducer = (state = initialState, action) => {
       const {isWebViewVisible} = action;
       return {...state, isWebViewVisible};
     }
+    case SET_QUERY: {
+      const {query} = action;
+      return {...state, query};
+    }
     default: {
       return {...state, isLoading: false};
     }
@@ -49,14 +55,14 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const fetchNewsList = page => {
+export const fetchNewsList = (query, page) => {
   return dispatch => {
     dispatch({type: FETCH_NEWS_LOADING, namespace: NAMESPACE});
-    // let URL = `${BASE_URL}?q=entertainment&pageSize=${PAGE_SIZE}&page=${page}`;
-    let URL = `${BASE_URL}?q=india&pageSize=${PAGE_SIZE}&page=${page}`;
+    let URL = `${BASE_URL}?q=${query}&pageSize=${PAGE_SIZE}&page=${page}`;
 
     Axios.get(URL, DEFAULT_HEADERS)
       .then(res => {
+        console.log("__res", query, page, res.data);
         dispatch({
           type: FETCH_NEWS_SUCCESS,
           namespace: NAMESPACE,
@@ -65,7 +71,7 @@ export const fetchNewsList = page => {
         });
       })
       .catch(err => {
-        console.log('__err', err);
+        console.log("__err", err);
         dispatch({
           type: FETCH_NEWS_FAILED,
           namespace: NAMESPACE,
@@ -87,5 +93,13 @@ export const setWebViewVisiblity = flag => {
     type: SET_WEBVIEW_VISIBILITY,
     namespace: NAMESPACE,
     isWebViewVisible: flag,
+  };
+};
+
+export const setQuery = query => {
+  return {
+    type: SET_QUERY,
+    namespace: NAMESPACE,
+    query,
   };
 };

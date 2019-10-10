@@ -13,7 +13,10 @@ import {bindActionCreators} from 'redux';
 const screens = ['menu-navigation', 'news-stack', 'web'];
 
 class HomeScreen extends Component {
-  currentNewsStackSlideIndex = 0;
+
+  moveToPage = (index) => {
+    this.viewpager.setPage(index);
+  }
 
   _renderItem({item, index}) {
     switch (item) {
@@ -27,7 +30,6 @@ class HomeScreen extends Component {
   }
 
   onPageSelected = ({nativeEvent: {position}}) => {
-    console.log('onPageSelected', position);
     if (position === 2) {
       this.props.actions.setWebViewVisiblity(true);
     } else {
@@ -36,15 +38,16 @@ class HomeScreen extends Component {
   };
 
   render() {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === 'android' || Platform.OS === "ios") {
       return (
         <View style={styles.container}>
           <StatusBar backgroundColor={BLACK} />
           <ViewPager
+            ref={(viewpager) => {this.viewpager = viewpager}}
             style={styles.viewPager}
-            initialPage={1}
+            initialPage={0}
             onPageSelected={this.onPageSelected}>
-            <MenuNavigationScreen />
+            <MenuNavigationScreen moveToPage={this.moveToPage}/>
             <NewsStackScreen />
             <WebScreen />
           </ViewPager>
@@ -62,7 +65,7 @@ class HomeScreen extends Component {
             renderItem={this._renderItem}
             sliderWidth={getScreenWidth()}
             itemWidth={getScreenWidth()}
-            firstItem={2}
+            firstItem={this.state.currentSlideIndex}
             inactiveSlideOpacity={1}
             inactiveSlideScale={1}
           />
@@ -76,9 +79,7 @@ class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    flex: 1
   },
   viewPager: {
     flex: 1,

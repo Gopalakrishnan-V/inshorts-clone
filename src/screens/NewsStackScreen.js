@@ -19,12 +19,15 @@ class NewsStackScreen extends Component {
   }
 
   componentDidMount = () => {
-    this.props.actions.fetchNewsList(1);
+    const {query} = this.props;
+    this.props.actions.fetchNewsList(query, 1);
   };
 
   handleEndReached = () => {
-    const {page} = this.props;
-    this.props.actions.fetchNewsList(page + 1);
+    const {query, page} = this.props;
+    if (!this.props.isLoading) {
+      this.props.actions.fetchNewsList(query, page + 1);
+    }
   };
 
   onSlideChange = slideIndex => {
@@ -68,18 +71,20 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-state => ({
-  page: state.news.currentPage,
-  newsList: state.news.newsList,
-  currentSlideIndex: state.news.currentSlideIndex,
-}),
-dispatch => ({
-  actions: bindActionCreators(
-    {
-      fetchNewsList,
-      setCurrentSlideIndex,
-    },
-    dispatch,
-  ),
-}),
+  state => ({
+    isLoading: state.news.isLoading,
+    query: state.news.query,
+    page: state.news.currentPage,
+    newsList: state.news.newsList,
+    currentSlideIndex: state.news.currentSlideIndex,
+  }),
+  dispatch => ({
+    actions: bindActionCreators(
+      {
+        fetchNewsList,
+        setCurrentSlideIndex,
+      },
+      dispatch,
+    ),
+  }),
 )(NewsStackScreen);

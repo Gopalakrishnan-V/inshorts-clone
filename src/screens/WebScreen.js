@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
-import {Text, StyleSheet, View, StatusBar} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  StatusBar,
+  ActivityIndicator,
+} from 'react-native';
 import {WebView} from 'react-native-webview';
-// import WebView from 'react-native-autoheight-webview';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
 import {BLACK, WHITE} from '../constants/Colors';
 import {FONT_SIZE_SMALL} from '../constants/Dimens';
@@ -24,7 +30,13 @@ class WebScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.top}>
+          <Icon
+            name="chevron-left"
+            color={WHITE}
+            size={STATUS_BAR_HEIGHT * 0.8}
+          />
           <Text style={styles.title}>{source.name}</Text>
+          <Icon name="more-vert" color={WHITE} size={STATUS_BAR_HEIGHT * 0.7} />
         </View>
 
         <View style={styles.webViewContainer}>
@@ -33,10 +45,11 @@ class WebScreen extends Component {
               uri: url,
             }}
             // style={styles.webView}
-            // scrollEnabled
-            // scalesPageToFit
-            // javaScriptEnabled={true}
-            // zoomable={false}
+            startInLoadingState
+            scrollEnabled
+            scalesPageToFit
+            javaScriptEnabled={false}
+            zoomable={false}
           />
         </View>
       </View>
@@ -55,8 +68,9 @@ const styles = StyleSheet.create({
     color: WHITE,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     width: '100%',
+    paddingHorizontal: 10,
   },
   title: {
     color: WHITE,
