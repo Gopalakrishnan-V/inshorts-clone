@@ -45,7 +45,7 @@ class HomeScreen extends Component {
           <ViewPager
             ref={(viewpager) => {this.viewpager = viewpager}}
             style={styles.viewPager}
-            initialPage={0}
+            initialPage={1}
             onPageSelected={this.onPageSelected}>
             <MenuNavigationScreen moveToPage={this.moveToPage}/>
             <NewsStackScreen />

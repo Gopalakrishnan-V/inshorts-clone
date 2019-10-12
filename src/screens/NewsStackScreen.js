@@ -15,18 +15,18 @@ const ITEM_HEIGHT = SCREEN_HEIGHT - STATUS_BAR_HEIGHT;
 
 class NewsStackScreen extends Component {
   _renderItem({item, index}) {
-    return <NewsCard key={String(index)} {...item} />;
+    return <NewsCard key={String(index)} data={item} />;
   }
 
   componentDidMount = () => {
     const {query} = this.props;
-    this.props.actions.fetchNewsList(query, 1);
+    // this.props.actions.fetchNewsList(query, 1);
   };
 
   handleEndReached = () => {
     const {query, page} = this.props;
     if (!this.props.isLoading) {
-      this.props.actions.fetchNewsList(query, page + 1);
+      // this.props.actions.fetchNewsList(query, page + 1);
     }
   };
 
@@ -35,7 +35,6 @@ class NewsStackScreen extends Component {
   };
 
   render() {
-    console.log('NewsStackScreenProps', this.props);
     const {newsList} = this.props;
 
     return (
@@ -47,7 +46,7 @@ class NewsStackScreen extends Component {
           sliderHeight={ITEM_HEIGHT}
           itemWidth={SCREEN_WIDTH}
           itemHeight={ITEM_HEIGHT}
-          firstItem={1}
+          firstItem={0}
           inactiveSlideOpacity={1}
           inactiveSlideScale={1}
           vertical={true}

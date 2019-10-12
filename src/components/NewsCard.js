@@ -7,26 +7,33 @@ import {
   FONT_SIZE_LARGE,
   FONT_SIZE_SMALL,
 } from '../constants/Dimens';
-import {GRAY, WHITE, DARK_GRAY} from '../constants/Colors';
+import {GRAY, WHITE, DARK_GRAY, NEWS_TITLE} from '../constants/Colors';
+import {
+  FONT_REGULAR,
+  FONT_BOLD,
+  FONT_MEDIUM,
+  FONT_LIGHT,
+} from '../constants/Constants';
 
 export default class NewsCard extends Component {
-  getStringTrimmed = str => {
-    if (!str) {
-      return str;
-    }
-    if (str.includes('…')) {
-      str = str.split('…')[0];
-    }
-    str = str.replace('\n', ' ');
-    return str.trim();
-  };
-
   render() {
-    const {source, title, description, urlToImage, content} = this.props;
-    const footer = {
+    const {
+      source_name,
       title,
-      subtitle: 'Read more from ' + source.name,
-    };
+      image_url,
+      content,
+      bottom_headline,
+      bottom_text,
+    } = this.props.data.news_obj;
+
+    console.log(
+      source_name,
+      title,
+      image_url,
+      content,
+      bottom_headline,
+      bottom_text,
+    );
 
     return (
       <View style={styles.container}>
@@ -34,7 +41,7 @@ export default class NewsCard extends Component {
           <FastImage
             style={{flex: 1}}
             source={{
-              uri: urlToImage,
+              uri: image_url,
             }}
             resizeMode={FastImage.resizeMode.cover}
           />
@@ -42,11 +49,7 @@ export default class NewsCard extends Component {
 
         <View style={[styles.middle, styles.contentPadding]}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>
-            {this.getStringTrimmed(description) + '. ' + content
-              ? this.getStringTrimmed(content) + '...'
-              : ''}
-          </Text>
+          <Text style={styles.description}>{content}</Text>
         </View>
 
         <View style={[styles.footer, styles.contentPadding]}>
@@ -54,13 +57,13 @@ export default class NewsCard extends Component {
             style={styles.footerTitle}
             numberOfLines={1}
             ellipsizeMode="tail">
-            {footer.title}
+            {bottom_headline}
           </Text>
           <Text
             style={styles.footerSubtitle}
             numberOfLines={1}
             ellipsizeMode="tail">
-            {footer.subtitle}
+            {bottom_text}
           </Text>
         </View>
       </View>
@@ -76,11 +79,11 @@ const styles = StyleSheet.create({
   },
   top: {
     backgroundColor: WHITE,
-    flex: 3,
+    flex: 3.8,
   },
   middle: {
     backgroundColor: WHITE,
-    flex: 5,
+    flex: 4.2,
   },
   footer: {
     flex: 0.9,
@@ -91,20 +94,27 @@ const styles = StyleSheet.create({
   contentPadding: {
     paddingHorizontal: 12,
   },
-  title: {fontWeight: '600', fontSize: FONT_SIZE_EXTRA_LARGE, marginTop: 12},
+  title: {
+    fontFamily: FONT_REGULAR,
+    fontSize: FONT_SIZE_EXTRA_LARGE,
+    marginTop: 12,
+  },
   description: {
+    fontFamily: FONT_REGULAR,
     fontSize: FONT_SIZE_LARGE,
     marginTop: 7,
     lineHeight: 25,
     color: GRAY,
   },
   footerTitle: {
+    fontFamily: FONT_REGULAR,
     color: WHITE,
     fontSize: FONT_SIZE_NORMAL,
     fontWeight: '600',
   },
   footerSubtitle: {
     color: WHITE,
+    fontFamily: FONT_LIGHT,
     fontSize: FONT_SIZE_SMALL,
     fontWeight: '400',
     marginTop: 2,
