@@ -14,35 +14,18 @@ import {fetchNewsList, setQuery} from '../reducers/news';
 import {LIGHT_BLUE, BLACK, DARKER_GRAY, GRAY} from '../constants/Colors';
 import {FONT_SIZE_LARGE, FONT_SIZE_NORMAL} from '../constants/Dimens';
 import {fetchTrendingTopics} from '../reducers/news';
-import {FONT_BOLD, FONT_BLACK, FONT_REGULAR} from '../constants/Constants';
+import {
+  NEWS_CATEGORIES,
+  FONT_BOLD,
+  FONT_BLACK,
+  FONT_REGULAR,
+} from '../constants/Constants';
+import {selectCategory, fetchCategoryNews} from '../reducers/news';
 
 const SCREEN_WIDTH = getScreenWidth();
 const SCREEN_HEIGHT = getScreenHeight();
 const MARGIN_HORIZONTAL = 8;
 const ITEM_WIDTH = (SCREEN_WIDTH - MARGIN_HORIZONTAL * 2) / 3;
-
-const categories = [
-  {
-    id: 'top_stories',
-    icon: 'https://inshorts.com/assets/images/cat_top_stories.png',
-    label: 'TOP STORIES',
-  },
-  {
-    id: 'all_news',
-    icon: 'https://inshorts.com/assets/images/cat_all_news.png',
-    label: 'ALL NEWS',
-  },
-  {
-    id: 'trending',
-    icon: 'https://inshorts.com/assets/images/cat_trending.png',
-    label: 'TRENDING',
-  },
-  {
-    id: 'bookmarks',
-    icon: 'https://inshorts.com/assets/images/cat_bookmarks.png',
-    label: 'BOOKMARKS',
-  },
-];
 
 class MenuNavigationScreen extends Component {
   state = {
@@ -70,26 +53,48 @@ class MenuNavigationScreen extends Component {
     );
   };
 
+  handleCategoryOnPress = item => {
+    if (item.id !== 'bookmarks') {
+      this.props.actions.selectCategory(item.id);
+      this.props.moveToPage(1);
+      this.props.actions.fetchCategoryNews(item.id);
+    }
+  };
+
   renderCategoriesContent = () => {
+    const {selectedCategory} = this.props;
+    console.log('selectedCategory', selectedCategory);
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {categories.map((category, index) => {
-          const {label, icon} = category;
+        {NEWS_CATEGORIES.map((category, index) => {
+          const {id, label, icon} = category;
+          const isSelected = id === selectedCategory;
           return (
             <TouchableOpacity
-              style={{
-                alignItems: 'center',
-                marginHorizontal: 20,
-                marginVertical: 8,
-              }}>
-              <FastImage
-                style={{width: SCREEN_WIDTH / 10, height: SCREEN_WIDTH / 10}}
-                source={{
-                  uri: icon,
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-              <Text style={styles.categoryLabel}>{label}</Text>
+              key={String(id)}
+              onPress={() => this.handleCategoryOnPress(category)}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  marginHorizontal: 20,
+                  marginVertical: 8,
+                  opacity: isSelected ? 1 : 0.6,
+                }}>
+                <FastImage
+                  style={{width: SCREEN_WIDTH / 10, height: SCREEN_WIDTH / 10}}
+                  source={{
+                    uri: icon,
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <Text
+                  style={[
+                    styles.categoryLabel,
+                    isSelected ? styles.selectedCategoryText : null,
+                  ]}>
+                  {label}
+                </Text>
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -113,7 +118,7 @@ class MenuNavigationScreen extends Component {
         {this.props.trendingTopics.map((item, index) => {
           const {image_url, label} = item;
           return (
-            <View style={styles.menuOuterWrapper}>
+            <View style={styles.menuOuterWrapper} key={String(index)}>
               <TouchableOpacity
                 style={[
                   styles.menuInnerWrapper,
@@ -167,6 +172,7 @@ class MenuNavigationScreen extends Component {
   };
 
   render() {
+    console.log('MenuNavigationProps', {...this.props});
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
@@ -244,12 +250,15 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BOLD,
     color: GRAY,
   },
+  selectedCategoryText: {
+    color: LIGHT_BLUE,
+  },
 });
 
 export default connect(
   state => ({
-    query: state.news.query,
     trendingTopics: state.news.trendingTopics,
+    selectedCategory: state.news.selectedCategory,
   }),
   dispatch => ({
     actions: bindActionCreators(
@@ -257,6 +266,8 @@ export default connect(
         fetchNewsList,
         setQuery,
         fetchTrendingTopics,
+        selectCategory,
+        fetchCategoryNews,
       },
       dispatch,
     ),

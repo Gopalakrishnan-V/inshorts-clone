@@ -14,8 +14,18 @@ import {
   FONT_MEDIUM,
   FONT_LIGHT,
 } from '../constants/Constants';
+import {getScreenHeight} from '../helpers/DimensionsHelper';
 
 export default class NewsCard extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    const currentProps = this.props;
+    if (currentProps.hash_id !== nextProps.hash_id) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   render() {
     const {
       source_name,
@@ -25,15 +35,6 @@ export default class NewsCard extends Component {
       bottom_headline,
       bottom_text,
     } = this.props.data.news_obj;
-
-    console.log(
-      source_name,
-      title,
-      image_url,
-      content,
-      bottom_headline,
-      bottom_text,
-    );
 
     return (
       <View style={styles.container}>
@@ -79,11 +80,11 @@ const styles = StyleSheet.create({
   },
   top: {
     backgroundColor: WHITE,
-    flex: 3.8,
+    flex: 4,
   },
   middle: {
     backgroundColor: WHITE,
-    flex: 4.2,
+    flex: 5,
   },
   footer: {
     flex: 0.9,

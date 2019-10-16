@@ -22,10 +22,15 @@ class WebScreen extends Component {
   render() {
     const {isWebViewVisible, currentSlideData} = this.props;
     if (!isWebViewVisible || !currentSlideData) {
-      return <View style={styles.container}></View>;
+      return (
+        <View style={styles.container}>
+          <Text>WebScreen</Text>
+        </View>
+      );
     }
 
-    const {source, url} = currentSlideData;
+    const {news_obj} = currentSlideData;
+    const {source_name, source_url} = news_obj;
 
     return (
       <View style={styles.container}>
@@ -35,14 +40,14 @@ class WebScreen extends Component {
             color={WHITE}
             size={STATUS_BAR_HEIGHT * 0.8}
           />
-          <Text style={styles.title}>{source.name}</Text>
+          <Text style={styles.title}>{source_name}</Text>
           <Icon name="more-vert" color={WHITE} size={STATUS_BAR_HEIGHT * 0.7} />
         </View>
 
         <View style={styles.webViewContainer}>
           <WebView
             source={{
-              uri: url,
+              uri: source_url,
             }}
             // style={styles.webView}
             startInLoadingState
@@ -83,10 +88,10 @@ const styles = StyleSheet.create({
 
 export default connect(
   state => ({
-    currentSlideIndex: state.news.currentSlideIndex,
+    currentNewsSlideIndex: state.news.currentNewsSlideIndex,
     isWebViewVisible: state.news.isWebViewVisible,
-    currentSlideData: state.news.newsList[state.news.currentSlideIndex]
-      ? state.news.newsList[state.news.currentSlideIndex]
+    currentSlideData: state.news.newsList[state.news.currentNewsSlideIndex]
+      ? state.news.newsList[state.news.currentNewsSlideIndex]
       : null,
   }),
   dispatch => ({

@@ -13,21 +13,9 @@ import {bindActionCreators} from 'redux';
 const screens = ['menu-navigation', 'news-stack', 'web'];
 
 class HomeScreen extends Component {
-
-  moveToPage = (index) => {
+  moveToPage = index => {
     this.viewpager.setPage(index);
-  }
-
-  _renderItem({item, index}) {
-    switch (item) {
-      case 'menu-navigation':
-        return <MenuNavigationScreen />;
-      case 'news-stack':
-        return <NewsStackScreen />;
-      case 'web':
-        return <WebScreen />;
-    }
-  }
+  };
 
   onPageSelected = ({nativeEvent: {position}}) => {
     if (position === 2) {
@@ -38,37 +26,24 @@ class HomeScreen extends Component {
   };
 
   render() {
-    if (Platform.OS === 'android' || Platform.OS === "ios") {
+    const {isNewsListEmpty} = this.props;
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
       return (
         <View style={styles.container}>
           <StatusBar backgroundColor={BLACK} />
           <ViewPager
-            ref={(viewpager) => {this.viewpager = viewpager}}
+            ref={viewpager => {
+              this.viewpager = viewpager;
+            }}
             style={styles.viewPager}
             initialPage={1}
             onPageSelected={this.onPageSelected}>
-            <MenuNavigationScreen moveToPage={this.moveToPage}/>
+            {!isNewsListEmpty && (
+              <MenuNavigationScreen moveToPage={this.moveToPage} />
+            )}
             <NewsStackScreen />
-            <WebScreen />
+            {!isNewsListEmpty && <WebScreen />}
           </ViewPager>
-        </View>
-      );
-    } else if (Platform.OS === 'ios') {
-      return (
-        <View style={styles.container}>
-          <StatusBar backgroundColor={BLACK} />
-          <Carousel
-            ref={c => {
-              this._carousel = c;
-            }}
-            data={screens}
-            renderItem={this._renderItem}
-            sliderWidth={getScreenWidth()}
-            itemWidth={getScreenWidth()}
-            firstItem={this.state.currentSlideIndex}
-            inactiveSlideOpacity={1}
-            inactiveSlideScale={1}
-          />
         </View>
       );
     } else {
@@ -79,7 +54,7 @@ class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   viewPager: {
     flex: 1,
@@ -87,7 +62,9 @@ const styles = StyleSheet.create({
 });
 
 export default connect(
-  state => ({}),
+  state => ({
+    isNewsListEmpty: state.news.newsList.length === 0,
+  }),
   dispatch => ({
     actions: bindActionCreators(
       {

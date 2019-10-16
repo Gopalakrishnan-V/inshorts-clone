@@ -13,6 +13,8 @@
     "axios": "^0.19.0",
     "react": "16.8.6",
     "react-native": "0.60.5",
+    "react-native-detect-navbar-android": "^0.3.0",
+    "react-native-extra-dimensions-android": "^1.2.5",
     "react-native-fast-image": "^7.0.2",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-snap-carousel": "^3.8.0",
