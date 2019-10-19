@@ -15,11 +15,15 @@ const SET_CURRENT_SLIDE_INDEX = 'SET_CURRENT_SLIDE_INDEX';
 const SET_WEBVIEW_VISIBILITY = 'SET_WEBVIEW_VISIBILITY';
 const SET_QUERY = 'SET_QUERY';
 const SELECT_CATEGORY = 'SELECT_CATEGORY';
+const SELECT_TOPIC = 'SELECT_TOPIC';
 
 const FETCH_TRENDING_TOPICS_SUCCESS = 'FETCH_TRENDING_TOPICS_SUCCESS';
 
 const FETCH_CATEGORY_NEWS_LOADING = 'FETCH_CATEGORY_NEWS_LOADING';
 const FETCH_CATEGORY_NEWS_SUCCESS = 'FETCH_CATEGORY_NEWS_SUCCESS';
+
+const FETCH_TOPIC_NEWS_LOADING = 'FETCH_TOPIC_NEWS_LOADING';
+const FETCH_TOPIC_NEWS_SUCCESS = 'FETCH_TOPIC_NEWS_SUCCESS';
 
 const initialState = {
   isLoading: false,
@@ -30,6 +34,8 @@ const initialState = {
   selectedCategory: 'top_stories',
   newsOffset: null,
   currentTopic: null,
+  selectedTopicId: null,
+  page: 1,
 };
 
 const reducer = (state = initialState, action) => {
@@ -100,7 +106,35 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         selectedCategory: action.category,
+        selectedTopicId: null,
         newsList: [],
+      };
+    }
+    case SELECT_TOPIC: {
+      return {
+        ...state,
+        selectedTopicId: action.topicId,
+        selectedCategory: null,
+        newsList: [],
+      };
+    }
+    case FETCH_TOPIC_NEWS_SUCCESS: {
+      const {result, topicId, page} = action;
+      return {
+        ...state,
+        newsList:
+          page === 1
+            ? result.news_list
+            : [...state.newsList, ...result.news_list],
+        selectedTopicId: topicId,
+        page,
+        isLoading: false,
+      };
+    }
+    case FETCH_TOPIC_NEWS_LOADING: {
+      return {
+        ...state,
+        isLoading: true,
       };
     }
     default: {
@@ -164,13 +198,16 @@ export const fetchTrendingTopics = () => {
 
     Axios.get(URL)
       .then(res => {
+        console.log("__res", res);
         dispatch({
           type: FETCH_TRENDING_TOPICS_SUCCESS,
           namespace: NAMESPACE,
           result: res.data.data,
         });
       })
-      .catch(err => {});
+      .catch(err => {
+        console.log("_err", err);
+      });
   };
 };
 
@@ -181,31 +218,32 @@ export const fetchCategoryNews = (category, newsOffset = null) => {
     if (newsOffset) {
       URL += `&news_offset=${newsOffset}`;
     }
-    // console.log('hitting_url', URL);
 
     Axios.get(URL)
       .then(res => {
         const result = res.data.data;
         if (!newsOffset && result.news_list.length) {
-          // Clearing news carousel actice index
+          // Clearing news carousel active index
+          // dispatch({
+          //   type: FETCH_CATEGORY_NEWS_SUCCESS,
+          //   namespace: NAMESPACE,
+          //   result: {...result, news_list: [result.news_list[0]]},
+          //   category,
+          //   newsOffset,
+          // });
+        }
+
+        // setTimeout(() => {
           dispatch({
             type: FETCH_CATEGORY_NEWS_SUCCESS,
             namespace: NAMESPACE,
-            result: {...result, news_list: [result.news_list[0]]},
+            result: result,
             category,
             newsOffset,
           });
-        }
-        dispatch({
-          type: FETCH_CATEGORY_NEWS_SUCCESS,
-          namespace: NAMESPACE,
-          result: result,
-          category,
-          newsOffset,
-        });
+        // }, 5);
       })
-      .catch(err => {
-      });
+      .catch(err => {});
   };
 };
 
@@ -214,5 +252,47 @@ export const selectCategory = category => {
     type: SELECT_CATEGORY,
     namespace: NAMESPACE,
     category,
+  };
+};
+
+export const selectTopic = topicId => {
+  return {
+    type: SELECT_TOPIC,
+    namespace: NAMESPACE,
+    topicId,
+  };
+};
+
+export const fetchTopicNews = (topicId, page = 1) => {
+  return dispatch => {
+    dispatch({type: FETCH_TOPIC_NEWS_LOADING, namespace: NAMESPACE});
+    let URL = `${INSHORTS_BASE_URL}/search/trending_topics/${topicId}?page=${page}&type=NEWS_CATEGORY`;
+
+    Axios.get(URL)
+      .then(res => {
+        const result = res.data.data;
+        if (page === 1 && result.news_list.length) {
+          // Clearing news carousel active index
+          // dispatch({
+          //   type: FETCH_TOPIC_NEWS_SUCCESS,
+          //   namespace: NAMESPACE,
+          //   result: {...result, news_list: [result.news_list[0]]},
+          //   topicId,
+          //   page,
+          // });
+        }
+        // setTimeout(() => {
+          dispatch({
+            type: FETCH_TOPIC_NEWS_SUCCESS,
+            namespace: NAMESPACE,
+            result,
+            topicId,
+            page,
+          });
+        // }, 5);
+      })
+      .catch(err => {
+        console.log('__Err', err);
+      });
   };
 };

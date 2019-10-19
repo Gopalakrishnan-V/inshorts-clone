@@ -11,19 +11,27 @@ import {bindActionCreators} from 'redux';
 import FastImage from 'react-native-fast-image';
 import {getScreenHeight, getScreenWidth} from '../helpers/DimensionsHelper';
 import {fetchNewsList, setQuery} from '../reducers/news';
-import {LIGHT_BLUE, BLACK, DARKER_GRAY, GRAY} from '../constants/Colors';
-import {FONT_SIZE_LARGE, FONT_SIZE_NORMAL} from '../constants/Dimens';
-import {fetchTrendingTopics} from '../reducers/news';
+import {LIGHT_BLUE, BLACK, DARKER_GRAY, GRAY, WHITE} from '../constants/Colors';
+import {
+  FONT_SIZE_LARGE,
+  FONT_SIZE_NORMAL,
+  FONT_SIZE_SMALL,
+} from '../constants/Dimens';
+import {
+  fetchTrendingTopics,
+  fetchTopicNews,
+  selectTopic,
+} from '../reducers/news';
 import {
   NEWS_CATEGORIES,
   FONT_BOLD,
   FONT_BLACK,
-  FONT_REGULAR,
+  FONT_SIZE_REGULAR,
 } from '../constants/Constants';
 import {selectCategory, fetchCategoryNews} from '../reducers/news';
+import LinearGradient from 'react-native-linear-gradient';
 
 const SCREEN_WIDTH = getScreenWidth();
-const SCREEN_HEIGHT = getScreenHeight();
 const MARGIN_HORIZONTAL = 8;
 const ITEM_WIDTH = (SCREEN_WIDTH - MARGIN_HORIZONTAL * 2) / 3;
 
@@ -37,11 +45,10 @@ class MenuNavigationScreen extends Component {
   };
 
   handleMenuOnPress = item => {
-    // this.setState({selectedIndex: index});
-    // const query = menus[index].query;
-    // this.props.actions.setQuery(query);
-    // this.props.actions.fetchNewsList(query, 1);
-    // this.props.moveToPage(1);
+    const {tag} = item;
+    this.props.actions.selectTopic(tag);
+    this.props.actions.fetchTopicNews(tag, 1);
+    this.props.moveToPage(1);
   };
 
   renderCategoriesHeader = () => {
@@ -63,7 +70,6 @@ class MenuNavigationScreen extends Component {
 
   renderCategoriesContent = () => {
     const {selectedCategory} = this.props;
-    console.log('selectedCategory', selectedCategory);
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {NEWS_CATEGORIES.map((category, index) => {
@@ -112,11 +118,11 @@ class MenuNavigationScreen extends Component {
   };
 
   renderSuggestedTopicsContent = () => {
-    const {selectedIndex} = this.state;
+    const {selectedTopicId} = this.props;
     return (
       <View style={styles.menusContainer}>
         {this.props.trendingTopics.map((item, index) => {
-          const {image_url, label} = item;
+          const {tag, image_url, label} = item;
           return (
             <View style={styles.menuOuterWrapper} key={String(index)}>
               <TouchableOpacity
@@ -136,8 +142,19 @@ class MenuNavigationScreen extends Component {
                   }}
                   resizeMode={FastImage.resizeMode.stretch}
                 />
-                <Text style={styles.topicLabel}>{label}</Text>
-                {selectedIndex === index ? (
+                <LinearGradient
+                  colors={['#FFFFFF00', '#FFFFFFDD', '#FFFFFFFF']}
+                  style={[
+                    {height: styles.menuOuterWrapper.height / 4},
+                    styles.absoluteBottom,
+                  ]}></LinearGradient>
+                <Text
+                  style={styles.topicLabel}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {label}
+                </Text>
+                {tag === selectedTopicId ? (
                   <View
                     style={[
                       {flex: 1},
@@ -172,7 +189,6 @@ class MenuNavigationScreen extends Component {
   };
 
   render() {
-    console.log('MenuNavigationProps', {...this.props});
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
@@ -189,6 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 12,
   },
   scrollView: {
     flex: 1,
@@ -196,7 +213,6 @@ const styles = StyleSheet.create({
   menusContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
     marginHorizontal: MARGIN_HORIZONTAL,
   },
   menuOuterWrapper: {
@@ -217,6 +233,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  absoluteBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   titleContent: {
     marginHorizontal: MARGIN_HORIZONTAL + 4,
   },
@@ -224,6 +246,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: FONT_SIZE_LARGE,
     fontFamily: FONT_BLACK,
+    fontWeight: '900',
     color: DARKER_GRAY,
   },
   divider: {
@@ -241,13 +264,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     marginHorizontal: 6,
     marginVertical: 6,
-    fontSize: FONT_SIZE_NORMAL,
+    fontSize: FONT_SIZE_REGULAR,
     fontFamily: FONT_BOLD,
+    fontWeight: '700',
   },
   categoryLabel: {
     marginTop: 16,
     fontSize: FONT_SIZE_NORMAL,
     fontFamily: FONT_BOLD,
+    fontWeight: '700',
     color: GRAY,
   },
   selectedCategoryText: {
@@ -259,6 +284,7 @@ export default connect(
   state => ({
     trendingTopics: state.news.trendingTopics,
     selectedCategory: state.news.selectedCategory,
+    selectedTopicId: state.news.selectedTopicId,
   }),
   dispatch => ({
     actions: bindActionCreators(
@@ -268,6 +294,8 @@ export default connect(
         fetchTrendingTopics,
         selectCategory,
         fetchCategoryNews,
+        fetchTopicNews,
+        selectTopic,
       },
       dispatch,
     ),

@@ -10,33 +10,32 @@ import {
   fetchNewsList,
   setCurrentNewsSlideIndex,
   fetchCategoryNews,
+  fetchTopicNews,
 } from '../reducers/news';
+import ShortsLoader from '../components/ShortsLoader';
 
 const SCREEN_WIDTH = getScreenWidth();
-const SCREEN_HEIGHT = getScreenHeight();
-const STATUS_BAR_HEIGHT = getStatusBarHeight();
-const ITEM_HEIGHT = SCREEN_HEIGHT - STATUS_BAR_HEIGHT;
-
-console.log('SCREEN_HEIGHT', SCREEN_HEIGHT);
 
 class NewsStackScreen extends Component {
   state = {};
-  // carouselRef = React.createRef();
 
   _renderItem({item, index}) {
     return <NewsCard key={String(index)} data={item} />;
   }
 
   componentDidMount = () => {
-    const {selectedCategory} = this.props;
-    this.props.actions.fetchCategoryNews(selectedCategory);
+    // const {selectedCategory} = this.props;
+    // this.props.actions.fetchCategoryNews(selectedCategory);
   };
 
   handleEndReached = () => {
-    const {selectedCategory, newsOffset} = this.props;
-    console.log('handleEndReached', selectedCategory, newsOffset);
+    const {selectedCategory, newsOffset, selectedTopicId, page} = this.props;
     if (!this.props.isLoading) {
-      this.props.actions.fetchCategoryNews(selectedCategory, newsOffset);
+      if (selectedCategory) {
+        this.props.actions.fetchCategoryNews(selectedCategory, newsOffset);
+      } else {
+        this.props.actions.fetchTopicNews(selectedTopicId, page + 1);
+      }
     }
   };
 
@@ -44,48 +43,13 @@ class NewsStackScreen extends Component {
     this.props.actions.setCurrentNewsSlideIndex(slideIndex);
   };
 
-  renderEmptyState = () => {
-    return (
-      <View
-        style={[
-          styles.container,
-          {
-            height: getScreenHeight(),
-          },
-        ]}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  };
-
-  componentDidUpdate = () => {
-    if (this.state.scrollToTopPending) {
-      this.setState({scrollToTopPending: false});
-      console.log('carouselRef', this.carouselRef);
-      // this.carouselRef.scrollToTop();
-    }
-  };
-
-  componentWillReceiveProps(nextProps) {
-    const currentProps = this.props;
-    if (currentProps.newsList.length === 0 && nextProps.newsList.length > 1) {
-      this.setState({scrollToTopPending: true});
-    }
-  }
-
   render() {
     const {newsList} = this.props;
-    console.log('renderNewsList', newsList);
-    const isEmpty = newsList.length === 0;
-
-    // if(isEmpty){
-    //   return this.renderEmptyState();
-    // }
+    console.log('NewsStackProps', {...this.props});
 
     return (
       <View style={{flex: 1}}>
         <Carousel
-          ref={ref => (this.carouselRef = ref)}
           data={newsList}
           renderItem={this._renderItem}
           sliderWidth={SCREEN_WIDTH}
@@ -100,7 +64,7 @@ class NewsStackScreen extends Component {
           nestedScrollEnabled
           windowSize={5}
           onSnapToItem={this.onSlideChange}
-          ListEmptyComponent={this.renderEmptyState}
+          // ListEmptyComponent={<ShortsLoader />}
         />
       </View>
     );
@@ -118,12 +82,11 @@ const styles = StyleSheet.create({
 export default connect(
   state => ({
     isLoading: state.news.isLoading,
-    query: state.news.query,
-    page: state.news.currentPage,
     newsList: state.news.newsList,
-    currentNewsSlideIndex: state.news.currentNewsSlideIndex,
     selectedCategory: state.news.selectedCategory,
     newsOffset: state.news.newsOffset,
+    selectedTopicId: state.news.selectedTopicId,
+    page: state.news.page,
   }),
   dispatch => ({
     actions: bindActionCreators(
@@ -131,6 +94,7 @@ export default connect(
         fetchNewsList,
         setCurrentNewsSlideIndex,
         fetchCategoryNews,
+        fetchTopicNews,
       },
       dispatch,
     ),

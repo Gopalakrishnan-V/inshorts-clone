@@ -19,14 +19,14 @@ const SCREEN_HEIGHT = getScreenHeight();
 const STATUS_BAR_HEIGHT = getStatusBarHeight();
 
 class WebScreen extends Component {
+  handleBackOnPress = () => {
+    this.props.moveToPage(1);
+  };
+
   render() {
     const {isWebViewVisible, currentSlideData} = this.props;
     if (!isWebViewVisible || !currentSlideData) {
-      return (
-        <View style={styles.container}>
-          <Text>WebScreen</Text>
-        </View>
-      );
+      return <View style={styles.container}></View>;
     }
 
     const {news_obj} = currentSlideData;
@@ -39,6 +39,7 @@ class WebScreen extends Component {
             name="chevron-left"
             color={WHITE}
             size={STATUS_BAR_HEIGHT * 0.8}
+            onPress={this.handleBackOnPress}
           />
           <Text style={styles.title}>{source_name}</Text>
           <Icon name="more-vert" color={WHITE} size={STATUS_BAR_HEIGHT * 0.7} />
@@ -53,7 +54,7 @@ class WebScreen extends Component {
             startInLoadingState
             scrollEnabled
             scalesPageToFit
-            javaScriptEnabled={false}
+            javaScriptEnabled={true}
             zoomable={false}
           />
         </View>

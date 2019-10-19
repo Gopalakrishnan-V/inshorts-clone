@@ -13,18 +13,39 @@ import {
   FONT_BOLD,
   FONT_MEDIUM,
   FONT_LIGHT,
+  momentCalendarConfig,
 } from '../constants/Constants';
-import {getScreenHeight} from '../helpers/DimensionsHelper';
+import moment from 'moment';
 
 export default class NewsCard extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const currentProps = this.props;
-    if (currentProps.hash_id !== nextProps.hash_id) {
+    if (currentProps.data.hash_id !== nextProps.data.hash_id) {
       return true;
     } else {
       return false;
     }
   }
+
+  getByLineText = () => {
+    const {byline_1, created_at} = this.props.data.news_obj;
+    if (!byline_1) {
+      return null;
+    }
+
+    return byline_1
+      .map(item => {
+        const {type, text} = item;
+        if (type === 'TEXT') {
+          return text.trim();
+        } else if (type === 'TIME') {
+          return moment(created_at).calendar(null, momentCalendarConfig);
+        } else {
+          return '';
+        }
+      })
+      .join(' ');
+  };
 
   render() {
     const {
@@ -51,6 +72,9 @@ export default class NewsCard extends Component {
         <View style={[styles.middle, styles.contentPadding]}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.description}>{content}</Text>
+          <Text style={styles.byLine} numberOfLines={1} ellipsizeMode="tail">
+            {this.getByLineText()}
+          </Text>
         </View>
 
         <View style={[styles.footer, styles.contentPadding]}>
@@ -97,24 +121,36 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: FONT_REGULAR,
+    fontWeight: '400',
     fontSize: FONT_SIZE_EXTRA_LARGE,
     marginTop: 12,
   },
   description: {
     fontFamily: FONT_REGULAR,
+    fontWeight: '400',
     fontSize: FONT_SIZE_LARGE,
     marginTop: 7,
     lineHeight: 25,
     color: GRAY,
   },
+  byLine: {
+    fontFamily: FONT_LIGHT,
+    fontWeight: '300',
+    fontSize: FONT_SIZE_NORMAL,
+    marginTop: 5,
+    color: GRAY,
+    opacity: 0.7,
+  },
   footerTitle: {
     fontFamily: FONT_REGULAR,
+    fontWeight: '400',
     color: WHITE,
     fontSize: FONT_SIZE_NORMAL,
     fontWeight: '600',
   },
   footerSubtitle: {
     color: WHITE,
+    fontWeight: '300',
     fontFamily: FONT_LIGHT,
     fontSize: FONT_SIZE_SMALL,
     fontWeight: '400',

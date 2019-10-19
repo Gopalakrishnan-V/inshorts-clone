@@ -3,7 +3,6 @@ import {Platform, View} from 'react-native';
 import {Provider} from 'react-redux';
 import {applyMiddleware, createStore} from 'redux';
 import thunk from 'redux-thunk';
-import DetectNavbar from 'react-native-detect-navbar-android';
 import AppContainer from './src/navigator';
 import rootReducer from './src/reducers';
 import {setScreenHeight} from './src/helpers/DimensionsHelper';

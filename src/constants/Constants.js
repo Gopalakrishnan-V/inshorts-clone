@@ -1,13 +1,35 @@
+import {Platform} from 'react-native';
+
 export const BASE_URL = 'https://newsapi.org/v2/everything';
 export const INSHORTS_BASE_URL = 'https://inshorts.com/api/en';
 export const PAGE_SIZE = 10;
 
-export const FONT_THIN = 'Roboto-Thin';
-export const FONT_LIGHT = 'Roboto-Light';
-export const FONT_REGULAR = 'Roboto-Regular';
-export const FONT_MEDIUM = 'Roboto-Medium';
-export const FONT_BOLD = 'Roboto-Bold';
-export const FONT_BLACK = 'Roboto-Black';
+const OS = Platform.OS;
+const fontFamilies =
+  OS === 'android'
+    ? {
+        thin: 'Roboto-Thin',
+        light: 'Roboto-Light',
+        regular: 'Roboto-Regular',
+        medium: 'Roboto-Medium',
+        bold: 'Roboto-Bold',
+        black: 'Roboto-Black',
+      }
+    : {
+        thin: 'System',
+        light: 'System',
+        regular: 'System',
+        medium: 'System',
+        bold: 'System',
+        black: 'System',
+      };
+
+export const FONT_THIN = fontFamilies.thin;
+export const FONT_LIGHT = fontFamilies.light;
+export const FONT_REGULAR = fontFamilies.regular;
+export const FONT_MEDIUM = fontFamilies.medium;
+export const FONT_BOLD = fontFamilies.bold;
+export const FONT_BLACK = fontFamilies.black;
 
 export const DEFAULT_HEADERS = {
   headers: {'x-api-key': '1b54bb7b253c46e4ad6d3d85c4bf1576'},
@@ -35,3 +57,12 @@ export const NEWS_CATEGORIES = [
     label: 'BOOKMARKS',
   },
 ];
+
+export const momentCalendarConfig = {
+  sameDay: '[Today]',
+  nextDay: '[Tomorrow]',
+  nextWeek: 'dddd',
+  lastDay: '[Yesterday]',
+  lastWeek: '[Last] dddd',
+  sameElse: 'DD/MM/YYYY',
+};
