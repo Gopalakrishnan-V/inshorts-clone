@@ -30,10 +30,6 @@ export const FONT_MEDIUM = fontFamilies.medium;
 export const FONT_BOLD = fontFamilies.bold;
 export const FONT_BLACK = fontFamilies.black;
 
-export const DEFAULT_HEADERS = {
-  headers: {'x-api-key': '1b54bb7b253c46e4ad6d3d85c4bf1576'},
-};
-
 export const NEWS_CATEGORIES = [
   {
     id: 'top_stories',
