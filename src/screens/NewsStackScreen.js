@@ -7,7 +7,6 @@ import {getScreenWidth, getScreenHeight} from '../helpers/DimensionsHelper';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
-  fetchNewsList,
   setCurrentNewsSlideIndex,
   fetchCategoryNews,
   fetchTopicNews,
@@ -91,7 +90,6 @@ export default connect(
   dispatch => ({
     actions: bindActionCreators(
       {
-        fetchNewsList,
         setCurrentNewsSlideIndex,
         fetchCategoryNews,
         fetchTopicNews,

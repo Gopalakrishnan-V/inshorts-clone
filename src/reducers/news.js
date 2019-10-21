@@ -1,10 +1,5 @@
 import Axios from 'axios';
-import {
-  BASE_URL,
-  PAGE_SIZE,
-  DEFAULT_HEADERS,
-  INSHORTS_BASE_URL,
-} from '../constants/Constants';
+import {INSHORTS_BASE_URL} from '../constants/Constants';
 const NAMESPACE = 'news';
 
 const FETCH_NEWS_LOADING = 'FETCH_NEWS_LOADING';
@@ -13,7 +8,6 @@ const FETCH_NEWS_FAILED = 'FETCH_NEWS_FAILED';
 
 const SET_CURRENT_SLIDE_INDEX = 'SET_CURRENT_SLIDE_INDEX';
 const SET_WEBVIEW_VISIBILITY = 'SET_WEBVIEW_VISIBILITY';
-const SET_QUERY = 'SET_QUERY';
 const SELECT_CATEGORY = 'SELECT_CATEGORY';
 const SELECT_TOPIC = 'SELECT_TOPIC';
 
@@ -66,10 +60,6 @@ const reducer = (state = initialState, action) => {
     case SET_WEBVIEW_VISIBILITY: {
       const {isWebViewVisible} = action;
       return {...state, isWebViewVisible};
-    }
-    case SET_QUERY: {
-      const {query} = action;
-      return {...state, query};
     }
     case FETCH_TRENDING_TOPICS_SUCCESS: {
       const {result} = action;
@@ -145,29 +135,6 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const fetchNewsList = (query, page) => {
-  return dispatch => {
-    dispatch({type: FETCH_NEWS_LOADING, namespace: NAMESPACE});
-    let URL = `${BASE_URL}?q=${query}&pageSize=${PAGE_SIZE}&page=${page}`;
-
-    Axios.get(URL, DEFAULT_HEADERS)
-      .then(res => {
-        dispatch({
-          type: FETCH_NEWS_SUCCESS,
-          namespace: NAMESPACE,
-          result: res.data.articles,
-          page,
-        });
-      })
-      .catch(err => {
-        dispatch({
-          type: FETCH_NEWS_FAILED,
-          namespace: NAMESPACE,
-        });
-      });
-  };
-};
-
 export const setCurrentNewsSlideIndex = index => {
   return {
     type: SET_CURRENT_SLIDE_INDEX,
@@ -184,21 +151,13 @@ export const setWebViewVisiblity = flag => {
   };
 };
 
-export const setQuery = query => {
-  return {
-    type: SET_QUERY,
-    namespace: NAMESPACE,
-    query,
-  };
-};
-
 export const fetchTrendingTopics = () => {
   return dispatch => {
     let URL = `${INSHORTS_BASE_URL}/search/trending_topics`;
 
     Axios.get(URL)
       .then(res => {
-        console.log("__res", res);
+        console.log('__res', res);
         dispatch({
           type: FETCH_TRENDING_TOPICS_SUCCESS,
           namespace: NAMESPACE,
@@ -206,7 +165,7 @@ export const fetchTrendingTopics = () => {
         });
       })
       .catch(err => {
-        console.log("_err", err);
+        console.log('_err', err);
       });
   };
 };
@@ -234,13 +193,13 @@ export const fetchCategoryNews = (category, newsOffset = null) => {
         }
 
         // setTimeout(() => {
-          dispatch({
-            type: FETCH_CATEGORY_NEWS_SUCCESS,
-            namespace: NAMESPACE,
-            result: result,
-            category,
-            newsOffset,
-          });
+        dispatch({
+          type: FETCH_CATEGORY_NEWS_SUCCESS,
+          namespace: NAMESPACE,
+          result: result,
+          category,
+          newsOffset,
+        });
         // }, 5);
       })
       .catch(err => {});
@@ -282,13 +241,13 @@ export const fetchTopicNews = (topicId, page = 1) => {
           // });
         }
         // setTimeout(() => {
-          dispatch({
-            type: FETCH_TOPIC_NEWS_SUCCESS,
-            namespace: NAMESPACE,
-            result,
-            topicId,
-            page,
-          });
+        dispatch({
+          type: FETCH_TOPIC_NEWS_SUCCESS,
+          namespace: NAMESPACE,
+          result,
+          topicId,
+          page,
+        });
         // }, 5);
       })
       .catch(err => {

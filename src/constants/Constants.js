@@ -1,6 +1,5 @@
 import {Platform} from 'react-native';
 
-export const BASE_URL = 'https://newsapi.org/v2/everything';
 export const INSHORTS_BASE_URL = 'https://inshorts.com/api/en';
 export const PAGE_SIZE = 10;
 

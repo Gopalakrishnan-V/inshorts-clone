@@ -10,7 +10,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import FastImage from 'react-native-fast-image';
 import {getScreenHeight, getScreenWidth} from '../helpers/DimensionsHelper';
-import {fetchNewsList, setQuery} from '../reducers/news';
 import {LIGHT_BLUE, BLACK, DARKER_GRAY, GRAY, WHITE} from '../constants/Colors';
 import {
   FONT_SIZE_LARGE,
@@ -289,8 +288,6 @@ export default connect(
   dispatch => ({
     actions: bindActionCreators(
       {
-        fetchNewsList,
-        setQuery,
         fetchTrendingTopics,
         selectCategory,
         fetchCategoryNews,
